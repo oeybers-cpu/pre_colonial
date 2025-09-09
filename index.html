@@ -198,7 +198,7 @@
             word-wrap: break-word;
         }
 
-        /* Left Sidebar Navigation */
+        /* Left Sidebar Navigation - FIXED */
         .left-sidebar {
             width: var(--sidebar-width);
             padding: 20px;
@@ -208,8 +208,10 @@
             margin-right: 30px;
             backdrop-filter: blur(10px);
             position: sticky;
-            top: calc(100% + var(--header-offset));
+            top: 120px; /* Fixed: Position beneath the header */
             height: fit-content;
+            max-height: calc(100vh - 140px); /* Ensure it doesn't exceed viewport */
+            overflow-y: auto; /* Add scroll if content is too long */
         }
 
         .sidebar-links {
@@ -447,6 +449,39 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .left-sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                position: static;
+                max-height: none;
+            }
+            
+            .sidebar-links {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .sidebar-link {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .main-content {
+                padding-top: 20px;
+            }
+            
+            .articles-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             :root {
                 --image-container-height: 160px;
@@ -688,6 +723,12 @@
             document.querySelectorAll('.article-card').forEach(card => {
                 card.style.scrollMarginTop = `${headerHeight + 30}px`;
             });
+            
+            // Update sidebar top position for larger screens
+            const sidebar = document.querySelector('.left-sidebar');
+            if (sidebar && window.innerWidth > 1200) {
+                sidebar.style.top = `${headerHeight + 20}px`;
+            }
         }
 
         // Run on load and resize
@@ -757,28 +798,6 @@
         document.querySelectorAll('.article-card').forEach(card => {
             observer.observe(card);
         });
-        
-        // Add click handler for Imhotep image to show info
-        document.addEventListener('DOMContentLoaded', function() {
-            const transmissionCard = document.getElementById('transmission');
-            if (transmissionCard) {
-                const img = transmissionCard.querySelector('img');
-                if (img) {
-                    img.addEventListener('click', function() {
-                        const info = `Imhotep lived over 4,000 years ago during Egypt's Old Kingdom, specifically around the 27th to 26th century BCE. He held prominent roles in society, serving as chancellor to Pharaoh Djoser and as high priest of the sun god Ra at the sacred city of Heliopolis. His influence extended across both political and religious spheres, making him one of the most revered figures of his time.
-
-Widely recognized as a polymath, Imhotep demonstrated exceptional skill and innovation in multiple fields. As the architect of the Step Pyramid at Saqqara—the first monumental stone structure in history—he revolutionized Egyptian architecture. He was also a pioneering physician, often credited as the founder of Egyptian medicine, with his teachings influencing healing practices for centuries. In addition, he contributed to astronomy and philosophical thought, earning a reputation as a sage and advisor.
-
-The name Imhotep translates to "He who comes in peace," a reflection of his legacy as a bringer of wisdom, healing, and harmony. His contributions were so profound that he was later deified as the god of medicine and wisdom—one of the few mortals in ancient Egypt to be granted divine status. His enduring legacy continues to symbolize the depth and sophistication of African intellectual traditions.
-
-"Imhotep was deified after his death as the god of medicine and wisdom, one of the few mortals to achieve divine status in ancient Egypt."`;
-                        
-                        alert(info);
-                    });
-                }
-            }
-        });
     </script>
 </body>
 </html>
-ete working page.
