@@ -40,6 +40,7 @@
             font-family: 'Exo 2', sans-serif;
             line-height: 1.6;
             display: flex;
+            flex-direction: row; /* Default desktop layout */
         }
 
         body::before {
@@ -210,8 +211,8 @@
             position: sticky;
             top: 120px; /* Fixed: Position beneath the header */
             height: fit-content;
-            max-height: calc(100vh - 140px); /* Ensure it doesn't exceed viewport */
-            overflow-y: auto; /* Add scroll if content is too long */
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
         }
 
         .sidebar-links {
@@ -250,7 +251,7 @@
 
         .main-content {
             flex: 1;
-            padding-top: 120px; /* Default value, will be updated by JS */
+            padding-top: 120px;
         }
 
         .container {
@@ -276,7 +277,7 @@
             position: relative;
             overflow: hidden;
             display: block;
-            scroll-margin-top: 130px; /* Default value, will be updated by JS */
+            scroll-margin-top: 130px;
         }
 
         .article-card::before {
@@ -460,17 +461,20 @@
                 margin-bottom: 20px;
                 position: static;
                 max-height: none;
+                overflow-y: visible; /* Fixes potential scrolling issue */
             }
             
             .sidebar-links {
                 flex-direction: row;
-                flex-wrap: wrap;
+                flex-wrap: wrap; /* Allows links to wrap to the next line */
+                justify-content: center; /* Centers the links */
                 gap: 10px;
             }
             
             .sidebar-link {
                 flex: 1;
                 min-width: 120px;
+                text-align: center;
             }
             
             .main-content {
@@ -506,6 +510,14 @@
                 font-size: 0.75rem;
                 padding: 0 5px;
                 margin: 6px auto 10px;
+            }
+            .header-controls {
+                padding: 0 10px;
+            }
+            .top-button {
+                bottom: 25px; /* Adjust for better mobile positioning */
+                right: 10px;
+                font-size: 0.7rem;
             }
         }
 
@@ -550,11 +562,10 @@
     
     <header>
         <div class="header-controls">
-            <a href="https://oeybers-cpu.github.io/a_lit_models/" class="home-button" title="Home">
+            <a href="" class="home-button" title="Home">
                 <i class="fas fa-home"></i>
             </a>
-            <div></div> <!-- Empty div for spacing -->
-        </div>
+            <div></div> </div>
         <h1>Literacies and Communication in Pre-colonial African Social Hierarchies</h1>
         <p class="subtitle">Exploring how communication forms shaped and maintained social order across African societies</p>
     </header>
@@ -716,11 +727,13 @@
             // Update main content padding
             const mainContent = document.querySelector('.main-content');
             if (mainContent) {
+                // We add an extra 20px for a comfortable gap below the fixed header
                 mainContent.style.paddingTop = `${headerHeight + 20}px`;
             }
             
             // Update scroll margin for article cards
             document.querySelectorAll('.article-card').forEach(card => {
+                // The scroll-margin-top should be enough to reveal the entire heading when scrolling to it
                 card.style.scrollMarginTop = `${headerHeight + 30}px`;
             });
             
@@ -776,27 +789,32 @@
         // Add active state to sidebar links
         const observerOptions = {
             root: null,
-            rootMargin: '-20% 0px -70% 0px',
+            rootMargin: '-20% 0px -70% 0px', // Adjusted to activate the link when the card is more visible
             threshold: 0
         };
 
-        const observer = new IntersectionObserver((entries) => {
+        const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
+                const id = entry.target.getAttribute('id');
+                const sidebarLink = document.querySelector(`.sidebar-link[href="#${id}"]`);
+
                 if (entry.isIntersecting) {
-                    const id = entry.target.getAttribute('id');
-                    document.querySelectorAll('.sidebar-link').forEach(link => {
+                    document.querySelectorAll('.sidebar-link.active').forEach(link => {
                         link.classList.remove('active');
                     });
-                    const activeLink = document.querySelector(`a[href="#${id}"]`);
-                    if (activeLink) {
-                        activeLink.classList.add('active');
+                    if (sidebarLink) {
+                        sidebarLink.classList.add('active');
+                    }
+                } else {
+                    if (sidebarLink) {
+                        sidebarLink.classList.remove('active');
                     }
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.article-card').forEach(card => {
-            observer.observe(card);
+        document.querySelectorAll('.article-card').forEach(section => {
+            observer.observe(section);
         });
     </script>
 </body>
